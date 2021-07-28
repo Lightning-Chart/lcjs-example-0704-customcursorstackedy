@@ -12,13 +12,10 @@ const {
    AxisTickStrategies,
    AutoCursorModes,
    SolidFill,
-   SolidLine,
-   ColorCSS,
    ColorRGBA,
    translatePoint,
    UILayoutBuilders,
    UIElementBuilders,
-   UIBackgrounds,
    UIOrigins,
    Themes,
 } = lcjs;
@@ -33,7 +30,7 @@ const channelCount = channels.length;
 
 // Create Dashboard.
 const dashboard = lightningChart().Dashboard({
-   // theme: Themes.dark
+   // theme: Themes.darkGold
    numberOfRows: channelCount,
    numberOfColumns: 1,
 });
@@ -86,12 +83,10 @@ const axisX = charts[charts.length - 1].getDefaultAxisX();
 const seriesList = charts.map((chart, i) =>
    chart.addLineSeries({
       dataPattern: {
-         // 'ProgressiveX' = every data points X value is higher than the previous ones X value.
-         pattern: "ProgressiveX",
-         // 'regularProgressiveStep: true' = the step between two consecutive data points is always same.
-         regularProgressiveStep: true,
-      },
-   })
+          // pattern: 'ProgressiveX' => Each consecutive data point has increased X coordinate.
+          pattern: 'ProgressiveX'
+      }
+    })
 );
 
 // Generate and push data to each line series.
@@ -129,43 +124,37 @@ const syncAxisXEventHandler = (axis, start, end) => {
 // Create UI elements for custom cursor.
 const resultTable = dashboard
    .addUIElement(
-      UILayoutBuilders.Column.setBackground(UIBackgrounds.Rectangle),
+      UILayoutBuilders.Column,
       dashboard.engine.scale
    )
    .setMouseInteractions(false)
    .setOrigin(UIOrigins.LeftBottom)
    .setMargin(5)
-   .setBackground((background) =>
-      background.setStrokeStyle(
-         new SolidLine({
-            thickness: 1,
-         })
-      )
+   .setBackground((background) => background
+      // Style same as Theme result table.
+      .setFillStyle(dashboard.getTheme().resultTableFillStyle)
+      .setStrokeStyle(dashboard.getTheme().resultTableStrokeStyle)
    );
+
+const resultTableTextBuilder = UIElementBuilders.TextBox
+   // Style same as Theme result table text.
+   .addStyler(textBox => textBox
+      .setTextFillStyle(dashboard.getTheme().resultTableTextFillStyle)
+   )
 
 const rowX = resultTable
    .addElement(UILayoutBuilders.Row)
-   .addElement(UIElementBuilders.TextBox)
-   .setTextFont((font) => font.setSize(14));
+   .addElement(resultTableTextBuilder)
 
 const rowsY = seriesList.map((el, i) => {
    return resultTable
       .addElement(UILayoutBuilders.Row)
-      .addElement(UIElementBuilders.TextBox)
-      .setTextFont((font) => font.setSize(14));
+      .addElement(resultTableTextBuilder)
 });
 
 const tickX = charts[channelCount - 1]
    .getDefaultAxisX()
    .addCustomTick()
-   .setGridStrokeStyle(
-      new SolidLine({
-         thickness: 1,
-         fillStyle: new SolidFill({
-            color: ColorCSS("gray"),
-         }),
-      })
-   );
 
 const ticksX = [];
 charts.forEach((chart, i) => {
@@ -176,14 +165,8 @@ charts.forEach((chart, i) => {
          .addConstantLine()
          .setValue(0)
          .setMouseInteractions(false)
-         .setStrokeStyle(
-            new SolidLine({
-               thickness: 1,
-               fillStyle: new SolidFill({
-                  color: ColorCSS("gray"),
-               }),
-            })
-         )
+         // Style according to Theme custom tick grid stroke.
+         .setStrokeStyle(chart.getTheme().customTickGridStrokeStyle)
       );
    }
 });
@@ -192,14 +175,6 @@ const ticksY = seriesList.map((el, i) => {
    return charts[i]
       .getDefaultAxisY()
       .addCustomTick()
-      .setGridStrokeStyle(
-         new SolidLine({
-            thickness: 1,
-            fillStyle: new SolidFill({
-               color: ColorCSS("gray"),
-            }),
-         })
-      );
 });
 
 const setCustomCursorVisible = (visible) => {
