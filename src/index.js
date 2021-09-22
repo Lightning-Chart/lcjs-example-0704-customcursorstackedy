@@ -58,20 +58,8 @@ const charts = channels.map((channelName, i) => {
       chart.getDefaultAxisX().setTickStrategy(AxisTickStrategies.Empty);
    }
 
-   // Sync X axes of stacked charts by adding an invisible tick to each Y axis with preset length.
-   chart
-      .getDefaultAxisY()
-      .addCustomTick(UIElementBuilders.AxisTick)
-      // Preset length is configured with tick length property.
-      .setTickLength(50)
-      // Following code makes the tick invisible.
-      .setTextFormatter(() => "")
-      .setGridStrokeStyle(emptyLine)
-      .setMarker((marker) =>
-         marker.setTickStyle(new SolidFill({
-            color: ColorRGBA(0, 0, 0, 0)
-         }))
-      );
+   // Align Y axes of stacked charts.
+   chart.getDefaultAxisY().setThickness(50)
 
    return chart;
 });

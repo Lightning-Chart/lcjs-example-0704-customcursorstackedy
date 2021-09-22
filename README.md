@@ -21,6 +21,10 @@ The demo can be used as an example or a seed project. Local execution requires t
 
 This example serves as an example for custom data cursor implementation in _stacked Y charts dashboard_, where there are several XY charts stacked vertically on each other.
 
+Custom cursors can be required for different purposes - like major structural changes or very application specific styling requirements.
+
+If lesser changes to default cursors are required then please see read about different methods of configuring cursor behavior - `ChartXY` API reference has good links and explanations to follow.
+
 In this case, the X Axis of each chart are _synchronized_, and when user mouse is above the chart the data of all series `Y` coordinates is shown at the respective `X` coordinate.
 
 Each `LineSeries` contains 100 000 unique data points, coming to a total of **300 000** data points. Regardless, the interaction with cursor is instantaneous.
