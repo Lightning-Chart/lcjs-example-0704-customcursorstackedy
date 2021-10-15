@@ -17,6 +17,7 @@ const {
    UILayoutBuilders,
    UIElementBuilders,
    UIOrigins,
+   synchronizeAxisIntervals,
    Themes,
 } = lcjs;
 
@@ -88,26 +89,9 @@ seriesList.forEach((series, i) =>
    })
 );
 
-
 // Code for synchronizing all X Axis intervals in stacked XY charts.
-let isAxisXScaleChangeActive = false
-const syncAxisXEventHandler = (axis, start, end) => {
-   if (isAxisXScaleChangeActive) return
-   isAxisXScaleChangeActive = true
-
-   // Find all other X Axes.
-   const otherAxes = charts
-      .map(chart => chart.getDefaultAxisX())
-      .filter(axis2 => axis2 !== axis)
-
-   // Sync other X Axis intervals.  
-   otherAxes.forEach((axis) => axis
-      .setInterval(start, end, false, true)
-   )
-
-   isAxisXScaleChangeActive = false
-}
-
+const syncedAxes = charts.map(chart => chart.getDefaultAxisX())
+synchronizeAxisIntervals(...syncedAxes)
 
 // Create UI elements for custom cursor.
 const resultTable = dashboard
@@ -258,12 +242,6 @@ charts.forEach((chart, i) => {
       // Display cursor.
       setCustomCursorVisible(true)
    });
-
-   // sync all the axes
-   const axis = chart.getDefaultAxisX()
-   axis.onScaleChange((start, end) =>
-      syncAxisXEventHandler(axis, start, end)
-   )
 
    // hide custom cursor and ticks if mouse leaves chart area
    chart.onSeriesBackgroundMouseLeave((_, e) => {
