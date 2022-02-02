@@ -127,6 +127,7 @@ const rowsY = seriesList.map((el, i) => {
 const tickX = charts[channelCount - 1]
    .getDefaultAxisX()
    .addCustomTick()
+   .setAllocatesAxisSpace(false)
 
 const ticksX = [];
 charts.forEach((chart, i) => {
@@ -147,6 +148,7 @@ const ticksY = seriesList.map((el, i) => {
    return charts[i]
       .getDefaultAxisY()
       .addCustomTick()
+      .setAllocatesAxisSpace(false)
 });
 
 const setCustomCursorVisible = (visible) => {
