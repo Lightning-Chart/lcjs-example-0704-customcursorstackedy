@@ -78,7 +78,7 @@ synchronizeAxisIntervals(...syncedAxes)
 
 // Create UI elements for custom cursor.
 const resultTable = dashboard
-    .addUIElement(UILayoutBuilders.Column, dashboard.engine.scale)
+    .addUIElement(UILayoutBuilders.Column, dashboard.coordsRelative)
     .setMouseInteractions(false)
     .setOrigin(UIOrigins.LeftBottom)
     .setMargin(5)
@@ -140,9 +140,9 @@ const setCustomCursorVisible = (visible) => {
 // Hide custom cursor components initially.
 setCustomCursorVisible(false)
 
-const showCursorAt = (mouseLocationEngine) => {
+const showCursorAt = (clientCoordinate) => {
     // Find the nearest data point to the mouse.
-    const nearestDataPoints = seriesList.map((el) => el.solveNearestFromScreen(mouseLocationEngine))
+    const nearestDataPoints = seriesList.map((el) => el.solveNearestFromScreen(clientCoordinate))
 
     // Abort operation if any of solved data points is `undefined`.
     if (nearestDataPoints.includes(undefined)) {
@@ -151,10 +151,7 @@ const showCursorAt = (mouseLocationEngine) => {
     }
 
     // Set custom cursor location.
-    resultTable.setPosition({
-        x: mouseLocationEngine.x,
-        y: mouseLocationEngine.y,
-    })
+    resultTable.setPosition(dashboard.translateCoordinate(clientCoordinate, dashboard.coordsRelative))
 
     // Format result table text.
     rowX.setText(`X: ${charts[0].getDefaultAxisX().formatValue(nearestDataPoints[0].location.x)}`)
@@ -177,19 +174,15 @@ const showCursorAt = (mouseLocationEngine) => {
 
 // Implement custom cursor logic with events.
 const mouseMoveHandler = (_, event) => {
-    // mouse location in web page
-    const mouseLocationClient = {
-        x: event.clientX,
-        y: event.clientY,
-    }
-    // Translate mouse location to LCJS coordinate system for solving data points from series, and translating to Axes.
-    const mouseLocationEngine = dashboard.engine.clientLocation2Engine(mouseLocationClient.x, mouseLocationClient.y)
-    showCursorAt(mouseLocationEngine)
+    showCursorAt(event)
 }
 
 charts.forEach((chart, i) => {
     chart.onSeriesBackgroundMouseMove(mouseMoveHandler)
     seriesList[i].onMouseMove(mouseMoveHandler)
+    seriesList[i].onMouseLeave(() => {
+        setCustomCursorVisible(false)
+    })
 
     // hide custom cursor and ticks if mouse leaves chart area
     chart.onSeriesBackgroundMouseLeave((_, e) => {
@@ -217,6 +210,6 @@ Promise.all(
     charts.forEach((chart) => chart.forEachAxis((axis) => axis.fit(false)))
     requestAnimationFrame(() => {
         // Show custom cursor at start automatically.
-        showCursorAt({ x: 500, y: 500 })
+        showCursorAt({ clientX: 500, clientY: 500 })
     })
 })
