@@ -24,6 +24,7 @@ const channels = ['Ch 1', 'Ch 2', 'Ch 3']
 const channelCount = channels.length
 
 // Create Dashboard.
+// NOTE: Using `Dashboard` is no longer recommended for new applications. Find latest recommendations here: https://lightningchart.com/js-charts/docs/basic-topics/grouping-charts/
 const dashboard = lightningChart().Dashboard({
     // theme: Themes.darkGold
     numberOfRows: channelCount,
