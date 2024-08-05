@@ -1,8 +1,10 @@
 /*
  * LightningChartJS example that showcases custom cursor implementation with stacked Y charts.
+
+OBSOLETE!
  */
 // Import LightningChartJS
-const lcjs = require('@arction/lcjs')
+const lcjs = require('@lightningchart/lcjs')
 
 // Extract required parts from LightningChartJS.
 const {
@@ -18,7 +20,7 @@ const {
 } = lcjs
 
 // Import data-generator from 'xydata'-library.
-const { createProgressiveTraceGenerator } = require('@arction/xydata')
+const { createProgressiveTraceGenerator } = require('@lightningchart/xydata')
 
 const channels = ['Ch 1', 'Ch 2', 'Ch 3']
 const channelCount = channels.length
@@ -43,7 +45,7 @@ const charts = channels.map((channelName, i) => {
     })
 
     // Disable default auto cursor.
-    chart.setAutoCursorMode(AutoCursorModes.disabled)
+    chart.setCursorMode(undefined)
 
     if (i === 0) {
         chart.setTitle('Stacked Y Dashboard with Custom Cursor')
@@ -145,7 +147,7 @@ setCustomCursorVisible(false)
 
 const showCursorAt = (clientCoordinate) => {
     // Find the nearest data point to the mouse.
-    const nearestDataPoints = seriesList.map((el) => el.solveNearestFromScreen(clientCoordinate))
+    const nearestDataPoints = seriesList.map((el) => el.solveNearest(clientCoordinate))
 
     // Abort operation if any of solved data points is `undefined`.
     if (nearestDataPoints.includes(undefined)) {
@@ -157,18 +159,18 @@ const showCursorAt = (clientCoordinate) => {
     resultTable.setPosition(dashboard.translateCoordinate(clientCoordinate, dashboard.coordsRelative))
 
     // Format result table text.
-    rowX.setText(`X: ${charts[0].getDefaultAxisX().formatValue(nearestDataPoints[0].location.x)}`)
+    rowX.setText(`X: ${charts[0].getDefaultAxisX().formatValue(nearestDataPoints[0].x)}`)
     rowsY.forEach((rowY, i) => {
-        rowY.setText(`Y${i}: ${charts[i].getDefaultAxisY().formatValue(nearestDataPoints[i].location.y)}`)
+        rowY.setText(`Y${i}: ${charts[i].getDefaultAxisY().formatValue(nearestDataPoints[i].y)}`)
     })
 
     // Position custom ticks.
-    tickX.setValue(nearestDataPoints[0].location.x)
+    tickX.setValue(nearestDataPoints[0].x)
     ticksX.forEach((tick, i) => {
         tick.setValue(tickX.getValue())
     })
     ticksY.forEach((tick, i) => {
-        tick.setValue(nearestDataPoints[i].location.y)
+        tick.setValue(nearestDataPoints[i].y)
     })
 
     // Display cursor.
