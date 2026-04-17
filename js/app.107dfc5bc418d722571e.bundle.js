@@ -1,0 +1,1 @@
+(self.webpackChunk=self.webpackChunk||[]).push([[524],{44(){window.lcjsSmallView=window.devicePixelRatio>=2}},e=>{e(e.s=44)}]);
